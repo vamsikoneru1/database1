@@ -175,17 +175,21 @@ public class TupleDesc {
 	 */
 	public String toString() {
 		// some code goes here
-		String x="";
-		StringBuffer y=new StringBuffer();
+		
+		StringBuffer desc=new StringBuffer();
+		
+		
+		
 		for(int i=0;i<types.length;i++)
 		{
-			y.append(types[i]+"("+names[i]+")");
+			desc.append(types[i]+"("+names[i]+")");
+			
 			if(i!=types.length-1)
 			{
-				y.append("|");
+				desc.append("|");
 			}
 		}
-		return y.toString();
+		return desc.toString();
 		
         //throw new UnsupportedOperationException("Implement this");
 	}

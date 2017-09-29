@@ -80,7 +80,7 @@ public class HeapPage implements Page {
 	public byte[] getPageData() {
 		return data;
 	}
-
+	
 	/**
 	 * @return the ID of this {@code HeapPage}.
 	 */
@@ -96,46 +96,27 @@ public class HeapPage implements Page {
 	 */
 	public Tuple getTuple(int entryID) {
 		// some code goes here
-		Tuple t;
+		Tuple t = null;
 		int wl=0;
 		byte b;
-	//	HeapPage hp = null;
-			
 		wl = tupleLocation(entryID);
-		
-		b=data[wl];
-		
-		DataInputStream in;
-		in = new DataInputStream(new ByteArrayInputStream(data, wl, data.length
-				- wl));
-	
-		
-		
-		t=createTuple(in);
-		if(t!=null)
+		if(entryID<entryCount())
 		{
-		
-		
-		
-		
-	//	createTuple(DataInputStream in);
-		//BufferPool bp;
-		//bp.id2page.get(pid);
-		
-		t.setRecordId(new RecordId(	pid, entryID));
-		
+		DataInputStream in;
+		in= new DataInputStream((new ByteArrayInputStream(data, wl, data.length- wl)));
+		t=createTuple(in);
+		RecordId rid=new RecordId(pid, entryID);
+		t.setRecordId(rid);
 		return t;
-	}
-		else
-			throw new NoSuchElementException("null");
+		}else
+		{
+			return null;
 		}
 		
-	
 		
-		
-		
-		//throw new UnsupportedOperationException("Implement this");
-	
+
+	}
+
 
 	/**
 	 * @return an iterator over all {@code Tuple}s on this {@code HeapPage} (calling remove on this iterator throws an
@@ -144,42 +125,36 @@ public class HeapPage implements Page {
 	 */
 	public Iterator<Tuple> iterator() {
 		
+		List<Tuple> tup=new LinkedList<>();
 		
-		
-		return new Iterator<Tuple>() {
-			
-			
-			
-			int max=entryCount();	
-			int curr=tupleLocation(max);
-			
-			@Override
-			public Tuple next() {
-				// TODO Auto-generated method stub
-				Tuple t=getTuple(curr);
-				if(t==null)
-				{
+		if(entryCount()==0){
+			return null;
+		}
+		else
+		{
+		for(int i=0;i<entryCount();i++)
+		{
+			if(getTuple(i)!=null)
+			{
+				tup.add(getTuple(i));
+			}
+			else
+			{
 				return null;
-				}
-				else
-					return t;
 			}
-			
-			@Override
-			public boolean hasNext() {
-				// TODO Auto-generated method stub
-				return curr<max;
-			}
-		};
+		}
+		Iterator<Tuple> t1=tup.iterator();
 		
-		
-		
-		
-		
-		//int u=entryCount();
-		
-		//throw new UnsupportedOperationException("Implement this");
+		return t1;
+		}
 	}
+		
+		
+		
+		
+		
+//	
+	
 
 	/**
 	 * Deletes the specified {@code Tuple} from this {@code HeapPage}; the {@code Tuple} should be updated to reflect
@@ -201,23 +176,17 @@ public class HeapPage implements Page {
 		
 		int l=t.getRecordId().tupleno();
 		int location=tupleLocation(l);
-		
-		
-		
-		saveTupleLocation(tupleLocation(l),-1);
-		t.setRecordId(null);
-		
-		
-		
-		
+		if(getTuple(l)!=null)
+
+		{
+			
+			saveTupleLocation(entryCount()-1,location);
+			t.setRecordId(null);
+			
 		}
-		//else
-//			
-//		{
-//		throw new DbException("Not there");
-		
-		
-		//
+			
+		}
+	
 	
 
 	/**
@@ -231,30 +200,32 @@ public class HeapPage implements Page {
 	 */
 	public void addTuple(Tuple t) throws DbException {
 		// some code goes here
-		byte[] b = toByteArray(t);
+		byte[] arr = toByteArray(t);
 		int location ;
-		int count=0;
 		int entryID;
-		DataInputStream in;
-		RecordId rid = null;
-		
-		if(freeSpaceSize() < b.length + 4){
+		int loc;
+		int c,c1;
+		if(freeSpaceSize() < arr.length + 4){
 			
 		throw new DbException("Cannot be inserted");
 		}
 		else
 			
 		{
-			location= endOfFreeSpace() - b.length;
-			System.arraycopy(b, 0, data, location,b.length);
-			count++;
-			saveEntryCount(data.length);
-//			in = new DataInputStream(new ByteArrayInputStream(data, location, data.length- location));
-			entryID=t.getRecordId().tupleno();
+
+			location = endOfFreeSpace() - arr.length;
+			System.arraycopy(arr, 0, data, location, arr.length);
 			
-			saveTupleLocation(entryID, location);
-			t.setRecordId(t.getRecordId());
-			//t.setRecordId(rid);
+			entryID = t.getRecordId().tupleno();
+			loc = tupleLocation(entryID);
+			c=entryCount();
+			c++;
+			saveEntryCount(c);
+			saveTupleLocation(c-1,location);
+			c++;
+			RecordId rid = new RecordId(pid, c);
+			t.setRecordId(rid);
+			
 		}
 	}
 

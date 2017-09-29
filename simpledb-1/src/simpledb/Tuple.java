@@ -90,17 +90,17 @@ public class Tuple {
 	 */
 	public String toString() {
 		// some code goes here
-		String x="";
-		StringBuffer y=new StringBuffer();
+		
+		StringBuffer tup=new StringBuffer();
 		for(int i=0;i<fields.length;i++)
 		{
-			y.append(fields[i]);
+			tup.append(fields[i]);
 			if(i!=fields.length-1)
 			{
-				y.append("|");
+				tup.append("|");
 			}
 		}
-		return y.toString();
+		return tup.toString();
         //throw new UnsupportedOperationException("Implement this");
 	}
 }

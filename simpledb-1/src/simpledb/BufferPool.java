@@ -59,29 +59,27 @@ public class BufferPool {
 	 */
 	public Page getPage(TransactionId tid, PageId pid, Permissions perm)
 			throws TransactionAbortedException, DbException {
-		Page page ;
+		Page getpage ;
 		// some code goes here
+		
 		if(id2page.containsKey(pid))
 		{
-			page=id2page.get(pid);
-			return page;
+			getpage=id2page.get(pid);
+			return getpage;
 		}
-		if(id2page.size()==numPages)
+		if(id2page.size()>numPages)
 		{
 			throw new DbException("evicattion");
 		}
 		
-		
-		
-		DbFile db=Database.getCatalog().getDbFile(pid.getTableId());
-		
-		
-		page=db.readPage(pid);
-		
-		id2page.put(pid,page);
-		
-		return page;
-		
+		DbFile db = Database.getCatalog().getDbFile(pid.getTableId());
+
+		getpage = db.readPage(pid);
+
+		id2page.put(pid, getpage);
+
+		return getpage;
+
         //throw new UnsupportedOperationException("Implement this");
 	}
 	

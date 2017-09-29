@@ -66,12 +66,46 @@ public class HeapFile implements DbFile {
 	// see DbFile.java for javadocs
 	public Page readPage(PageId pid) {
 		// some code goes here
-		Page p;
+		byte [] b=new byte[BufferPool.PAGE_SIZE];
+		int pagesize=BufferPool.PAGE_SIZE;
+		int ofset=pid.pageno();
+		int pos=pagesize*ofset;
 		
+		RandomAccessFile ram=null;
 		
+		try {
+			ram=new RandomAccessFile(file, "r");
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			ram.seek(pos);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
-		throw new UnsupportedOperationException("Implement this");
+		try {
+			ram.readFully(b, 0, BufferPool.PAGE_SIZE);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		Page pu = null;
+		try {
+			//Page p=new HeapPage((HeapPageId) pid, b); 
+			pu = new HeapPage((HeapPageId) pid, b);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return pu;
+
 	}
+
+	// throw new UnsupportedOperationException("Implement this");
 
 	// see DbFile.java for javadocs
 	public void writePage(Page page) throws IOException {
@@ -127,15 +161,41 @@ public class HeapFile implements DbFile {
 			@Override
 			public boolean hasNext() throws DbException, TransactionAbortedException {
 				// some code goes here
-				throw new UnsupportedOperationException("Implement this");
+				if(iterator==null)
+				{
+					return false;
+				}
+				else
+				{
+					if(iterator.hasNext()==false)
+						return false;
+					else
+						return true;
+					
+						
+				}
+				
+			
 			}
 
 			@Override
 			public Tuple next() throws DbException, TransactionAbortedException, NoSuchElementException {
-				// some code goes here
-				throw new UnsupportedOperationException("Implement this");
+				// some code goes hereTuple res;
+				Tuple res;
+				
+				if(iterator==null)
+				{
+					throw new NoSuchElementException("No such element");
+				}
+				
+				else
+				{
+					res= null;
+					res=iterator.next();
+					return res;
+				}
 			}
-
+			
 			@Override
 			public void rewind() throws DbException, TransactionAbortedException {
 				close();
